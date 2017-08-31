@@ -157,10 +157,6 @@ public class IceCreamModule : MonoBehaviour
 
     void GenerateSolutions()
     {
-        solCustomerNames = new int[maxStages];
-        solution = new int[maxStages];
-        flavourOptions = new int[maxStages][];
-
         // Choose correct flavour list if not done already.
         if (list == null)
         {
@@ -168,29 +164,35 @@ public class IceCreamModule : MonoBehaviour
             else if (hasEmptyPortPlate) { list = FlavourLists[1]; }
             else if (BombInfo.GetBatteryCount() >= 3) { list = FlavourLists[2]; }
             else { list = FlavourLists[3]; }
+
+            solCustomerNames = new int[maxStages];
+            solution = new int[maxStages];
+            flavourOptions = new int[maxStages][];
+        }
+
+        for (int i = currentStage; i < maxStages; i++)
+        {
+            solCustomerNames[i] = -1;
         }
 
         // Generate solution per stage.
-        for (int i = 0; i < maxStages; i++)
+        for (int i = currentStage; i < maxStages; i++)
         {
-            solCustomerNames[i] = -1;
             int customerID = -1;
-            int[] stageFlavours = new int[5];
+            int[] stageFlavours = {-1, -1, -1, -1, 9};
             int flavourId = -1;
 
             // Create list of selectable flavours for the stage.
             for (int si = 0; si < 4; si++)
             {
-                stageFlavours[si] = -1;
                 while (Array.Exists(stageFlavours, x => x == flavourId))
-                    flavourId = Random.Range(0, Flavours.Length - 2);
+                    flavourId = Random.Range(0, Flavours.Length);
                 stageFlavours[si] = flavourId;
             }
-            stageFlavours[4] = 9;
 
             // Choose a customer for the stage.
             while (Array.Exists(solCustomerNames, x => x == customerID))
-                customerID = Random.Range(0, CustomerNames.Length - 1);
+                customerID = Random.Range(0, CustomerNames.Length);
 
             // Determine if the customer is allergic to any of the chosen flavours.
             bool[] bad = new bool[stageFlavours.Length];
